@@ -16,10 +16,12 @@ See References[1] from p 7 for X25519 implementation notes.
 
 */
 
+// would it be useful to have a method that is able to generate
+// 32 random bytes?
+fn generate_random_bytes() -> [u8; 32] {}
+
 fn encode_ucoord() {}
-
 fn decode_ucoord() {}
-
 fn decode_le() {}
 
 // decode 32 byte scalars for X25519
@@ -27,6 +29,7 @@ fn decode_scalar(k: [u8; 32]) -> u64 {
     0
 }
 
+//
 fn x25519(k: [u8; 32], u: &[u8], v: &mut [u8]) {}
 
 #[cfg(test)]
