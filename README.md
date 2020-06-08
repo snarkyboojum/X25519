@@ -1,6 +1,6 @@
 ## Overview
 
-An implementation of X25519 for use Elliptic Curve Diffie-Hellman (ECDH), written in Rust.
+An implementation of X25519 for use in Elliptic Curve Diffie-Hellman (ECDH), written in Rust.
 
 ## References
 
