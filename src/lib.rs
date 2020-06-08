@@ -57,10 +57,16 @@ mod tests {
         let k = Vec::from_hex("0900000000000000000000000000000000000000000000000000000000000000");
         let u = Vec::from_hex("0900000000000000000000000000000000000000000000000000000000000000");
 
-        for i in 1..1_000_000 {
-            if i == 0 {
+        for i in 1..=1_000_000 {
+            if i == 1 {
+                // after 1 iteration we should get
+                // 422c8e7a6227d7bca1350b3e2bb7279f7897b87bb6854b783c60e80311ae3079
             } else if i == 1000 {
-            } else if i == 999_999 {
+                // after 1,000 iterations we should get
+                // 684cf59ba83309552800ef566f2f4d3c1c3887c49360e3875f2eb94d99532c51
+            } else if i == 1_000_000 {
+                // after 1,000,000 interations we should get
+                // 7c3911e0ab2586fd864497297e575e6f3bc601c0883c30df5f4dd2d24f665424
             }
         }
     }
