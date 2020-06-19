@@ -16,21 +16,47 @@ See References[1] from p 7 for X25519 implementation notes.
 
 */
 
-// would it be useful to have a method that is able to generate
-// 32 random bytes?
-fn generate_random_bytes() -> [u8; 32] {}
+// p = 2^255 - 19;
 
-fn encode_ucoord() {}
-fn decode_ucoord() {}
-fn decode_le() {}
+// we're going to have to get good at arithmetic on 256 bit numbers:
+// see, https://www.chosenplaintext.ca/articles/radix-2-51-trick.html
+// and, https://github.com/dalek-cryptography/curve25519-dalek/blob/master/src/backend/serial/u64/scalar.rs
+
+fn encode_ucoord(u_coord: [u8; 32]) {}
+
+fn decode_ucoord(u_coord: [u8; 32]) -> u64 {
+    // implicit assumption that we're doing 255 bits
+    // see p7 of https://tools.ietf.org/html/rfc7748#section-5
+
+    let mut u_list = u_coord;
+    u_list[31] &= (1 << 255 % 8) - 1;
+
+    decode_le(u_list)
+}
+
+fn decode_le(bytes: [u8; 32]) -> u64 {
+    let mut sum = 0;
+    for (i, b) in bytes.iter().enumerate() {
+        sum += (*b << 8 * i) as u64;
+    }
+
+    sum
+}
 
 // decode 32 byte scalars for X25519
 fn decode_scalar(k: [u8; 32]) -> u64 {
     0
 }
 
+// u is little endian
+// must mask the msb in the final byte - if little endian, msb should be
+// right hand most byte / bit
+// if u is >= 2^255 - 19 but <= 2^255 - 1, then we -> modulo 2^255 - 19?
 //
-fn x25519(k: [u8; 32], u: &[u8], v: &mut [u8]) {}
+// k: is the scalar
+// u: is the u-coordinate
+// v: is the output coordinate
+fn x25519(k: [u8; 32], u: &[u8; 32], v: &mut [u8; 32]) {}
 
 #[cfg(test)]
 mod tests {
@@ -46,6 +72,8 @@ mod tests {
         let mut output_ucoord =
             Vec::from_hex("c3da55379de9c6908e94ea4df28d084f32eccf03491c71f754b4075577a28552");
 
+        // call the x25519 function ...
+
         input_scalar =
             Vec::from_hex("4b66e9d4d1b4673c5ad22691957d6af5c11b6421e0ea01d42ca4169e7918ba0d");
         input_ucoord =
@@ -54,6 +82,7 @@ mod tests {
             Vec::from_hex("95cbde9476e8907d7aade45cb4b873f88b595a68799fa152e6f8f7647aac7957")
     }
 
+    #[test]
     fn test_x25519_ktimes() {
         use hex::FromHex;
 
@@ -72,5 +101,24 @@ mod tests {
                 // 7c3911e0ab2586fd864497297e575e6f3bc601c0883c30df5f4dd2d24f665424
             }
         }
+    }
+
+    #[test]
+    fn test_ecdhe_x25519() {
+        use hex::FromHex;
+        let alice_prv_key =
+            Vec::from_hex("77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a");
+        let bob_prv_key =
+            Vec::from_hex("5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb");
+
+        let expected_bob_pub_key =
+            Vec::from_hex("de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f");
+        let expected_alice_pub_key =
+            Vec::from_hex("8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a");
+        let expected_shared_secret_key =
+            Vec::from_hex("4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742");
+
+        // use x25519 etc to compute all of this
+        // ...
     }
 }
