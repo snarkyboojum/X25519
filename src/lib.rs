@@ -1,2 +1,2 @@
-pub mod curve25519;
+pub mod arithmetic;
 pub mod x25519;

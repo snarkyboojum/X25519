@@ -1,4 +1,4 @@
-use crate::curve25519;
+use crate::arithmetic;
 
 fn encode_ucoord(u_coord: [u8; 32]) {}
 
